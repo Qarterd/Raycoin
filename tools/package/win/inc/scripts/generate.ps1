@@ -12,7 +12,7 @@ if (!(Get-Process raycoind -ErrorAction Ignore))
 & "$path/scripts/stop-generate.ps1"
 Start-Sleep -s 1
 
-$code = 0
+$codes = @()
 $code_warmup = 28
 $delay = $false
 do 
@@ -27,5 +27,5 @@ do
         $clients += Start-Process -PassThru -WindowStyle Hidden "$path/raycoin-cli" -ArgumentList $args, generate, $env:MINING_ADDRESS, $sleep
     }
     Wait-Process -InputObject $clients
-    $code = $clients[0].ExitCode
-} while ($code -eq $code_warmup)
+    $codes = $clients | foreach { $_.ExitCode }
+} while ($code_warmup -in $codes)
